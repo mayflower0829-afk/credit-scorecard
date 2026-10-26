@@ -41,7 +41,6 @@ df["MARRIAGE"] = df["MARRIAGE"].replace({0: 3})
 train, test = train_test_split(df, test_size=0.2, stratify=df["target"], random_state=42)
 
 # ---- 复用 analysis.py 的 WOE 管线（重跑分箱，保证同口径） ----
-import subprocess
 import sys
 sys.path.insert(0, str(ROOT / "src"))
 # 直接运行 analysis.py 会重复输出图表；改为 import 其中的函数过于耦合，
