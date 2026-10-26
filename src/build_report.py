@@ -215,7 +215,7 @@ a {{ color:var(--accent); }}
 <footer>
   数据来源：<a href="https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients" target="_blank" rel="noopener">UCI Default of Credit Card Clients</a> ·
   Yeh &amp; Lien (2009) · 分析代码见项目仓库
-</footer>
+ · <a href="/">← 返回作品集主页</a></footer>
 </main>
 </body>
 </html>"""
