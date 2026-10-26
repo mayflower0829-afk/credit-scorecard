@@ -13,6 +13,8 @@ OUT = ROOT / "output"
 PUB = ROOT / "public"
 (CHARTS := PUB / "charts").mkdir(parents=True, exist_ok=True)
 
+GBDT_M = json.loads((OUT / "gbdt_metrics.json").read_text(encoding="utf-8")) if (OUT / "gbdt_metrics.json").exists() else None
+
 M = json.loads((OUT / "metrics.json").read_text(encoding="utf-8"))
 
 for png in OUT.glob("*.png"):
@@ -25,6 +27,7 @@ CHART_NAMES = {
     "04_model_eval.png": "图4 · 模型评估（ROC 与概率分布）",
     "05_score_grade.png": "图5 · 评分分组与实际违约率",
 }
+figcap04 = CHART_NAMES['04_model_eval.png']
 
 
 def esc(s):
@@ -55,6 +58,15 @@ for feat in top5:
     <table class="tbl"><thead><tr><th>分箱</th><th>得分</th></tr></thead><tbody>{rows}</tbody></table></div>"""
 
 grade = " → ".join(f"{v:.1f}%" for v in M["grade_badrate"])
+
+GBDT_ROWS = ""
+GBDT_IMG = ""
+if GBDT_M:
+    GBDT_ROWS = "".join(
+        f"<tr><td>{esc(r['model'])}</td><td>{r['cv_auc']:.3f} ± {r['cv_std']:.3f}</td><td>{r['test_auc']:.3f}</td></tr>"
+        for r in GBDT_M["models"]
+    )
+    GBDT_IMG = '<img src="charts/09_gbdt_compare.png" alt="GBDT对比"><p class="figcap">图4b · 与 GBDT 基线的 ROC 对比</p>'
 
 kpi = (
     metric_card(f"{M['auc_test']:.3f}", "测试集 AUC", f"5折CV {M['cv_auc_mean']:.3f}±{M['cv_auc_std']:.3f}")
@@ -144,7 +156,16 @@ a {{ color:var(--accent); }}
   <h2>4 · 逻辑回归建模与评估</h2>
   <div class="card">
     <img src="charts/04_model_eval.png" alt="模型评估">
-    <p class="figcap">{CHART_NAMES['04_model_eval.png']}</p>
+    <p class="figcap">{figcap04}</p>
+    {GBDT_IMG}
+    {f'''<div class="grid2"><div>
+      <h3>与 GBDT 基线的定量对比</h3>
+      <table class="tbl"><thead><tr><th>模型</th><th>5折CV AUC</th><th>测试集 AUC</th></tr></thead><tbody>{GBDT_ROWS}</tbody></table>
+    </div><div>
+      <h3>为什么最终选择逻辑回归</h3>
+      <p>默认超参的 HistGradientBoosting 只把测试集 AUC 提高约 <b>1 个百分点</b>（{GBDT_M['models'][0]['test_auc']:.3f} → {GBDT_M['models'][1]['test_auc']:.3f}），代价是失去系数可解释性——而评分卡的业务价值恰恰在于每个分数都能拆解到特征与分箱层面。此外注意：LR 使用 IV 筛选后的 14 个特征即可达到接近全特征的表现（口径差异见两表 AUC），说明筛选后信息几乎无损。</p>
+      <p>这个对比是「可解释性 vs 性能」权衡的定量证据：当复杂模型只带来边际提升时，简单模型是更负责任的选择。</p>
+    </div></div>''' if GBDT_M else ''}
     <div class="grid2">
       <div>
         <h3>入模特征与系数（WOE 尺度）</h3>

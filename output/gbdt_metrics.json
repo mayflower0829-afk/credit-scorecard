@@ -1,0 +1,23 @@
+{
+  "models": [
+    {
+      "model": "LR(WOE) 主模型",
+      "cv_auc": 0.7726,
+      "cv_std": 0.0052,
+      "test_auc": 0.7629
+    },
+    {
+      "model": "HistGB(原始特征)",
+      "cv_auc": 0.7821,
+      "cv_std": 0.0053,
+      "test_auc": 0.7745
+    },
+    {
+      "model": "HistGB(WOE特征)",
+      "cv_auc": 0.7801,
+      "cv_std": 0.0052,
+      "test_auc": 0.7708
+    }
+  ],
+  "note": "同一 8:2 分层划分（random_state=42）；GBDT 为默认超参未调优"
+}

@@ -80,6 +80,15 @@ a { color:var(--accent); }
   <div class="card">
     <img src="charts/04_model_eval.png" alt="模型评估">
     <p class="figcap">图4 · 模型评估（ROC 与概率分布）</p>
+    <img src="charts/09_gbdt_compare.png" alt="GBDT对比"><p class="figcap">图4b · 与 GBDT 基线的 ROC 对比</p>
+    <div class="grid2"><div>
+      <h3>与 GBDT 基线的定量对比</h3>
+      <table class="tbl"><thead><tr><th>模型</th><th>5折CV AUC</th><th>测试集 AUC</th></tr></thead><tbody><tr><td>LR(WOE) 主模型</td><td>0.773 ± 0.005</td><td>0.763</td></tr><tr><td>HistGB(原始特征)</td><td>0.782 ± 0.005</td><td>0.774</td></tr><tr><td>HistGB(WOE特征)</td><td>0.780 ± 0.005</td><td>0.771</td></tr></tbody></table>
+    </div><div>
+      <h3>为什么最终选择逻辑回归</h3>
+      <p>默认超参的 HistGradientBoosting 只把测试集 AUC 提高约 <b>1 个百分点</b>（0.763 → 0.774），代价是失去系数可解释性——而评分卡的业务价值恰恰在于每个分数都能拆解到特征与分箱层面。此外注意：LR 使用 IV 筛选后的 14 个特征即可达到接近全特征的表现（口径差异见两表 AUC），说明筛选后信息几乎无损。</p>
+      <p>这个对比是「可解释性 vs 性能」权衡的定量证据：当复杂模型只带来边际提升时，简单模型是更负责任的选择。</p>
+    </div></div>
     <div class="grid2">
       <div>
         <h3>入模特征与系数（WOE 尺度）</h3>
